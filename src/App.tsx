@@ -17,10 +17,12 @@ const App : React.FC = () => {
           <p className="font-bold text-2xl">Todo List</p>
           <ModeToggle />
         </div>
-        <div className="w-full h-[90%]">
+        <div className="w-full h-[90%] scrollbar-hide">
           <AddItem onFormSubmit = {handleRefresh} />
           <Separator className="my-4" />
+          <div className="h-[87%] overflow-y-scroll">
           <TaskItems key = {refresh ? 'refresh' : 'no-refresh'} />
+          </div>
         </div>
       </div>
     </div>

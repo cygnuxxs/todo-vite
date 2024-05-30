@@ -12,31 +12,28 @@ const TaskItems: React.FC = () => {
   }, []);
 
   const handleDelete = (keyValue: string) => {
+    const updatedItems = items.filter((item) => item.keyValue !== keyValue);
+    setItems(updatedItems);
     localStorage.removeItem(keyValue);
-    setItems((prevItems) =>
-      prevItems.filter((item) => item.keyValue !== keyValue)
-    );
-    toast({
-      title: "Deleted task successfully.",
-      description: items.find((item) => item.keyValue === keyValue)?.task,
-    });
+
+    const deletedItem = items.find((item) => item.keyValue === keyValue);
+    if (deletedItem) {
+      toast({
+        title: "Deleted task successfully.",
+        description: deletedItem.task.task_name,
+      });
+    }
   };
 
-  return (
-    <div className="w-full flex flex-col gap-2 h-[30rem] p-1 scrollbar-hide overflow-y-scroll">
-      {items.length > 0 ? (
-        items.map((item, index) => (
-          <Item
-            key={index}
-            props={item}
-            onDelete={() => handleDelete(item.keyValue)}
-          />
-        ))
-      ) : (
-        <div className="w-full h-full flex flex-col items-center justify-center">
-        <p className="text-primary text-center text-sm">No Tasks to do.</p>
-        </div>
-      )}
+  return items.length > 0 ? (
+    <div className="w-full flex flex-col gap-2 p-1">
+      {items.map((item) => (
+        <Item key={item.keyValue} props={item} onDelete={() => handleDelete(item.keyValue)} />
+      ))}
+    </div>
+  ) : (
+    <div className="w-full h-full flex flex-col items-center justify-center">
+      <p className="text-primary text-center text-sm">No Tasks to do.</p>
     </div>
   );
 };

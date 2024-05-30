@@ -1,5 +1,5 @@
 import { ItemProps } from "@/lib/utils";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -14,8 +14,24 @@ const Item: React.FC<{ props: ItemProps; onDelete: () => void }> = ({
   props,
   onDelete,
 }) => {
-  const [isClicked, setIsClicked] = useState<boolean>(false);
+  const [isClicked, setIsClicked] = useState<boolean>(props.task.isClicked);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const savedState = localStorage.getItem(props.keyValue);
+    if (savedState) {
+      const parsedState = JSON.parse(savedState);
+      setIsClicked(parsedState.isClicked);
+    }
+  }, [props.keyValue]);
+
+  useEffect(() => {
+    const taskState = {
+      task_name: props.task.task_name,
+      isClicked: isClicked,
+    };
+    localStorage.setItem(props.keyValue, JSON.stringify(taskState));
+  }, [isClicked, props.keyValue, props.task.task_name]);
 
   const handleClick = () => {
     setIsClicked(!isClicked);
@@ -23,10 +39,10 @@ const Item: React.FC<{ props: ItemProps; onDelete: () => void }> = ({
 
   const handleDelete = () => {
     localStorage.removeItem(props.keyValue);
-    onDelete(); // Call the onDelete function passed from the parent
+    onDelete();
     toast({
       title: "Deleted task successfully.",
-      description: props.task,
+      description: props.task.task_name,
     });
   };
 
@@ -42,7 +58,7 @@ const Item: React.FC<{ props: ItemProps; onDelete: () => void }> = ({
             isClicked ? "line-through text-muted-foreground" : ""
           }`}
         >
-          {props.task}
+          {props.task.task_name}
         </p>
       </div>
       <TooltipProvider>
